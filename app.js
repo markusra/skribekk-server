@@ -80,6 +80,7 @@ wss.on("connection", function connection(ws) {
         console.log(`${clientName} guessed: ${data}`);
         if (data.toLowerCase() === word.toLowerCase()) {
           console.log("=> guessed correctly!");
+          gameStarted = false;
           sendToAllClients(
             JSON.stringify({
               type: "wordGuessed",
