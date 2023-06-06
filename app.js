@@ -9,7 +9,7 @@ const wss = new WebSocketServer({ port });
 console.log("skribekk server startet on port", port);
 
 let hostId, word;
-let gameStarted = false;
+let activeGame = false;
 
 wss.on("connection", function connection(ws) {
   const clientId = nanoid(16);
@@ -49,7 +49,7 @@ wss.on("connection", function connection(ws) {
       case "startGame":
         console.log("Game started by", clientName);
         hostId = clientId;
-        gameStarted = true;
+        activeGame = true;
         // fetch("https://random-word-form.herokuapp.com/random/animal/a?count=3")
         //   .then((r) => r.json())
         //   .then((d) => console.log({ type, data: JSON.stringify(d) }));
@@ -63,15 +63,15 @@ wss.on("connection", function connection(ws) {
         sendToOtherClients(JSON.stringify({ type: "gameStarted", data: null }));
         break;
       case "draw":
-        if (gameStarted && clientId === hostId) {
+        if (activeGame && clientId === hostId) {
           sendToAllClients(msg);
         }
-        if (!gameStarted) {
+        if (!activeGame) {
           sendToAllClients(msg);
         }
         break;
       case "clear":
-        if (gameStarted && clientId === hostId) {
+        if (activeGame && clientId === hostId) {
           console.log("Clears canvases");
           sendToAllClients(msg);
         }
@@ -80,7 +80,7 @@ wss.on("connection", function connection(ws) {
         console.log(`${clientName} guessed: ${data}`);
         if (data.toLowerCase() === word.toLowerCase()) {
           console.log("=> guessed correctly!");
-          gameStarted = false;
+          activeGame = false;
           sendToAllClients(
             JSON.stringify({
               type: "wordGuessed",
