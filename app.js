@@ -70,6 +70,12 @@ wss.on("connection", function connection(ws) {
           sendToAllClients(msg);
         }
         break;
+      case "clear":
+        if (gameStarted && clientId === hostId) {
+          console.log("Clears canvases");
+          sendToAllClients(msg);
+        }
+        break;
       case "guess":
         console.log(`${clientName} guessed: ${data}`);
         if (data.toLowerCase() === word.toLowerCase()) {
